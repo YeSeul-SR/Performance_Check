@@ -1,14 +1,22 @@
 import os
+import psutil
+
 def check_GPU():
-    GPU_temp = os.popen("nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader")
-    GPU_usage = os.popen("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader")
-    GPU_memory_usage = os.popen("nvidia-smi --query-gpu=utilization.memory --format=csv,noheader")
-    information_list = {
-        "temperature": GPU_temp.read().rstrip(),
-        "usage": GPU_usage.read().rstrip(),
-        "memory_usage": GPU_memory_usage.read().rstrip()
-    }
+    try:
+        GPU_temp = os.popen("nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader")
+        GPU_usage = os.popen("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader")
+        GPU_memory_usage = os.popen("nvidia-smi --query-gpu=utilization.memory --format=csv,noheader")
+        information_list = {
+            "temperature": GPU_temp.read().rstrip(),
+            "usage": GPU_usage.read().rstrip(),
+            "memory_usage": GPU_memory_usage.read().rstrip()
+        }
+
+    except:
+        return "nvidia shell script error!"
+
     return information_list
+
 def main():
     print(check_GPU())
     return
@@ -16,7 +24,7 @@ def main():
 if __name__ == '__main__':
     main()
 
-# import psutil
+
 # print(psutil.sensors_temperatures())
 # core temp > cpu temp
 
