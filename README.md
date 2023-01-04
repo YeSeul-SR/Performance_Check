@@ -11,3 +11,5 @@ pip3 install -r requirements.txt
 ```shell
 python3 main.py --time 30
 ```
+
+3. Computer information is saved the `./data` folder
