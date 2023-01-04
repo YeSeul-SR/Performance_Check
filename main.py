@@ -11,18 +11,14 @@ def check_GPU_info():
         GPU_temp = os.popen("nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader")
         GPU_usage = os.popen("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader")
         GPU_memory_usage = os.popen("nvidia-smi --query-gpu=utilization.memory --format=csv,noheader")
-        information_list = {
-            "temperature": GPU_temp.read().rstrip(),
-            "usage": GPU_usage.read().rstrip(),
-            "memory_usage": GPU_memory_usage.read().rstrip()
-        }
-
+        information_list = [GPU_temp.read().rstrip(), GPU_usage.read().rstrip(), GPU_memory_usage.read().rstrip()]
     except:
         return sys.exit("nvidia shell script error! check your nvidia driver")
     return information_list
 
 def check_CPU_temp():
-    CPU_information = {}
+    temp = []
+    label = []
     if not hasattr(psutil, "sensors_temperatures"):
         sys.exit("platform not supported")
     temps = psutil.sensors_temperatures()
@@ -31,11 +27,11 @@ def check_CPU_temp():
 
     if "coretemp" in temps:
         entries = temps["coretemp"]
-        CPU_information["temperature"] = {}
         for entry in entries:
-            CPU_information["temperature"][entry.label] = entry.current
+            label.append(entry.label)
+            temp.append(entry.current)
 
-        return CPU_information
+        return label, temp
 
     else:
         sys.exit("can't get core temperatures")
@@ -43,18 +39,27 @@ def check_CPU_temp():
 def check_CPU_usage(time):
     return psutil.cpu_percent(interval=time)
 
+def check_memory_usage():
+    mem = psutil.virtual_memory()
+    print('memory usage :', mem[2], '%')
+
+def check_disk_usage():
+    disk = psutil.disk_usage('/')
+    print('disk usage :', disk.percent, '%')
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Enter the time in seconds.")
     parser.add_argument('--time', type=int, default=30)
     return parser.parse_args()
 
 def main(time):
-    print(datetime.now())
-    # CPU usage
-    # t1= threading.Thread(target=check_CPU_usage, args=(time,))
-    # t1.start()
-    print(check_CPU_temp())
-    print(check_GPU_info())
+    now_day = str(datetime.now().date())
+    now_time = str(datetime.now().time())
+    GPU_df = pandas.DataFrame(check_GPU_info(), columns=["GPU"], index=["temperature", "usage", "memory usage"])
+    print(GPU_df)
+    cpu_label, cpu_temp = check_CPU_temp()
+    CPU_df = pandas.DataFrame(cpu_temp, columns=["CPU Temperature"], index=cpu_label)
+    print(CPU_df)
     return
 
 if __name__ == '__main__':
