@@ -1,7 +1,12 @@
 import os
+import argparse
+import sys
 import psutil
+import threading
+import pandas
+from datetime import datetime
 
-def check_GPU():
+def check_GPU_info():
     try:
         GPU_temp = os.popen("nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader")
         GPU_usage = os.popen("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader")
@@ -13,77 +18,45 @@ def check_GPU():
         }
 
     except:
-        return "nvidia shell script error!"
-
+        return sys.exit("nvidia shell script error! check your nvidia driver")
     return information_list
 
-def main():
-    print(check_GPU())
+def check_CPU_temp():
+    CPU_information = {}
+    if not hasattr(psutil, "sensors_temperatures"):
+        sys.exit("platform not supported")
+    temps = psutil.sensors_temperatures()
+    if not temps:
+        sys.exit("can't read any temperature")
+
+    if "coretemp" in temps:
+        entries = temps["coretemp"]
+        CPU_information["temperature"] = {}
+        for entry in entries:
+            CPU_information["temperature"][entry.label] = entry.current
+
+        return CPU_information
+
+    else:
+        sys.exit("can't get core temperatures")
+
+def check_CPU_usage(time):
+    return psutil.cpu_percent(interval=time)
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Enter the time in seconds.")
+    parser.add_argument('--time', type=int, default=30)
+    return parser.parse_args()
+
+def main(time):
+    print(datetime.now())
+    # CPU usage
+    # t1= threading.Thread(target=check_CPU_usage, args=(time,))
+    # t1.start()
+    print(check_CPU_temp())
+    print(check_GPU_info())
     return
 
 if __name__ == '__main__':
-    main()
-
-
-# print(psutil.sensors_temperatures())
-# core temp > cpu temp
-
-# print(type(string))
-
-# def secs2hours(secs):
-#     mm, ss = divmod(secs, 60)
-#     hh, mm = divmod(mm, 60)
-#     return "%d:%02d:%02d" % (hh, mm, ss)
-# 
-# 
-# def main():
-#     if hasattr(psutil, "sensors_temperatures"):
-#         temps = psutil.sensors_temperatures()
-#     else:
-#         temps = {}
-#     if hasattr(psutil, "sensors_fans"):
-#         fans = psutil.sensors_fans()
-#     else:
-#         fans = {}
-#     if hasattr(psutil, "sensors_battery"):
-#         battery = psutil.sensors_battery()
-#     else:
-#         battery = None
-# 
-#     if not any((temps, fans, battery)):
-#         print("can't read any temperature, fans or battery info")
-#         return
-# 
-#     names = set(list(temps.keys()) + list(fans.keys()))
-#     for name in names:
-#         print(name)
-#         # Temperatures.
-#         if name in temps:
-#             print("    Temperatures:")
-#             for entry in temps[name]:
-#                 print("        %-20s %s°C (high=%s°C, critical=%s°C)" % (
-#                     entry.label or name, entry.current, entry.high,
-#                     entry.critical))
-#         # Fans.
-#         if name in fans:
-#             print("    Fans:")
-#             for entry in fans[name]:
-#                 print("        %-20s %s RPM" % (
-#                     entry.label or name, entry.current))
-# 
-#     # Battery.
-#     if battery:
-#         print("Battery:")
-#         print("    charge:     %s%%" % round(battery.percent, 2))
-#         if battery.power_plugged:
-#             print("    status:     %s" % (
-#                 "charging" if battery.percent < 100 else "fully charged"))
-#             print("    plugged in: yes")
-#         else:
-#             print("    left:       %s" % secs2hours(battery.secsleft))
-#             print("    status:     %s" % "discharging")
-#             print("    plugged in: no")
-# 
-# 
-# if __name__ == '__main__':
-#     main()
+    parmeter = parse_arguments()
+    main(parmeter.time)
