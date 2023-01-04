@@ -1,9 +1,12 @@
 import os
 import argparse
 import sys
+import time
+
 import psutil
 import threading
 import pandas
+import logging
 from datetime import datetime
 
 def check_GPU_info():
@@ -47,21 +50,46 @@ def check_disk_usage():
     disk = psutil.disk_usage('/')
     print('disk usage :', disk.percent, '%')
 
+def check_etc_usage():
+    info = []
+
+    load_memory = psutil.virtual_memory()
+    info.append(load_memory[2])
+
+    load_disk = psutil.disk_usage('/')
+    info.append(load_disk.percent)
+
+    return info
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Enter the time in seconds.")
     parser.add_argument('--time', type=int, default=30)
     return parser.parse_args()
 
-def main(time):
-    now_day = str(datetime.now().date())
-    now_time = str(datetime.now().time())
-    GPU_df = pandas.DataFrame(check_GPU_info(), columns=["GPU"], index=["temperature", "usage", "memory usage"])
-    print(GPU_df)
+def main(timer):
+    logging.info("start to check LPU-B information")
+    now = datetime.now()
+    date = now.strftime('%Y-%m-%d %H:%M:%S')
+    GPU_df = pandas.DataFrame(check_GPU_info(), columns=[date], index=["temperature", "usage", "memory usage"])
     cpu_label, cpu_temp = check_CPU_temp()
-    CPU_df = pandas.DataFrame(cpu_temp, columns=["CPU Temperature"], index=cpu_label)
-    print(CPU_df)
-    return
+    CPU_df = pandas.DataFrame(cpu_temp, columns=[date], index=cpu_label)
+    usage_df = pandas.DataFrame(check_etc_usage(), columns=[date], index=["memory", "disk"])
+    while True:
+        now = datetime.now()
+        date = now.strftime('%Y-%m-%d %H:%M:%S')
+        GPU_df[date] = check_GPU_info()
+        cpu_name, cpu_temp = check_CPU_temp()
+        CPU_df[date] = cpu_temp
+        usage_df[date] = check_etc_usage()
+
+        GPU_df.to_csv("./data/GPU.csv")
+        CPU_df.to_csv("./data/CPU_temp.csv")
+        usage_df.to_csv("./data/usage_info.csv")
+        print(now, "saving")
+        logging.info("saved file")
+        time.sleep(timer)
 
 if __name__ == '__main__':
     parmeter = parse_arguments()
+    logging.info(f"set time is {parmeter.time}")
     main(parmeter.time)
