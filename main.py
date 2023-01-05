@@ -31,7 +31,7 @@ def check_GPU_info():
 def check_CPU_info():
     usage = psutil.cpu_percent(interval=None)
     temp = [usage]
-    label = ["usage"]
+    label = ["CPU usage"]
     if not hasattr(psutil, "sensors_temperatures"):
         sys.exit("platform not supported")
     temps = psutil.sensors_temperatures()
@@ -41,7 +41,7 @@ def check_CPU_info():
     if "coretemp" in temps:
         entries = temps["coretemp"]
         for entry in entries:
-            label.append(entry.label)
+            label.append(entry.label+"-temperature")
             temp.append(entry.current)
 
         return label, temp
@@ -70,12 +70,64 @@ def check_network():
     label = []
     status = []
     stats = psutil.net_if_stats()
+    error_info = psutil.net_io_counters(pernic=True)
     for nic, addrs in psutil.net_if_addrs().items():
         if nic in stats:
-            label.append(nic)
-            status.append(stats[nic].isup)
+            if stats[nic].isup:
+                label.append(nic)
+                status.append(stats[nic].isup)
+                if nic in error_info:
+                    label.append(nic+"-errin")
+                    status.append(error_info[nic].errin)
+                    label.append(nic+"-errout")
+                    status.append(error_info[nic].errout)
+                    label.append(nic+"-dropin")
+                    status.append(error_info[nic].dropin)
+                    label.append(nic+"-dropout")
+                    status.append(error_info[nic].dropout)
     return label, status
 
+
+
+def get_data():
+    timestamp = datetime.now()
+    now = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+    column = []
+    data = []
+
+    cpu_label, cpu_info = check_CPU_info()
+    for label in cpu_label:
+        column.append(label)
+    for info in cpu_info:
+        data.append(info)
+
+    GPU_info = check_GPU_info()
+    column.append("GPU temperature")
+    column.append("GPU usage")
+    column.append("GPU memory usage")
+    for info in GPU_info:
+        data.append(info)
+
+    usage_info = check_etc_usage()
+    column.append("Memory usage")
+    column.append("Disk Usage")
+    for info in usage_info:
+        data.append(info)
+
+    net_label, net_status = check_network()
+    for label in net_label:
+        column.append(label)
+    for status in net_status:
+        data.append(status)
+
+    return now, data, column
+
+def save_file(df):
+    now, data, column = get_data()
+    df.loc[now] = data
+    df.to_csv("./data/computer_information.csv")
+    print(f"{now}, saved to file")
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Enter the time in seconds.")
@@ -83,43 +135,16 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def save_file(GPU_df, CPU_df, usage_df, network_df):
-    GPU_df.to_csv("./data/GPU.csv")
-    CPU_df.to_csv("./data/CPU.csv")
-    usage_df.to_csv("./data/usage_info.csv")
-    network_df.to_csv("./data/network.csv")
-
-
 def main(timer):
-    now = datetime.now()
-    date = now.strftime("%Y-%m-%d %H:%M:%S")
-    print(f"{date} start to check LPU-B status")
-    GPU_df = pandas.DataFrame(
-        check_GPU_info(), columns=[date], index=["temperature", "usage", "memory usage"]
-    )
-    cpu_label, cpu_info = check_CPU_info()
-    CPU_df = pandas.DataFrame(cpu_info, columns=[date], index=cpu_label)
-    usage_df = pandas.DataFrame(
-        check_etc_usage(), columns=[date], index=["memory", "disk"]
-    )
-    net_label, net_status = check_network()
-    network_df = pandas.DataFrame(net_status, columns=[date], index=net_label)
-    save_file(GPU_df, CPU_df, usage_df, network_df)
+    now, data, column = get_data()
+
+    df = pandas.DataFrame(data=[data], index=[now], columns=column)
+
+    df.to_csv("./data/computer_information.csv")
+    print(f"{now}, start saved to file")
     time.sleep(timer)
-
     while True:
-        now = datetime.now()
-        date = now.strftime("%Y-%m-%d %H:%M:%S")
-        GPU_df[date] = check_GPU_info()
-        cpu_name, cpu_info = check_CPU_info()
-        CPU_df[date] = cpu_info
-        usage_df[date] = check_etc_usage()
-        net_label, net_status = check_network()
-        network_df = pandas.DataFrame(net_status, columns=[date], index=net_label)
-
-        save_file(GPU_df, CPU_df, usage_df, network_df)
-        print(f"{date}, saved file")
-
+        save_file(df)
         time.sleep(timer)
 
 

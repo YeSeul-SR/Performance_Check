@@ -1,17 +1,19 @@
 ### Introduce Folder
 
-1. `GPU.csv`
-- Temperature
+1. `computer_information`
+- CPU information
+  - Usage
+  - Temperature of each core
+
+- GPU information
+  - Temperature
+  - Usage
+  - Memory Usage
+
 - Usage
-- Memory Usage
+  - Memory Usage
+  - Disk Usage
 
-2. `CPU.csv`
-- Usage
-- Temperature of each core
-
-3. `usage_info.csv`
-- Memory Usage
-- Disk Usage
-
-4. `network.csv`
-- Status of each network port
+- Network
+  - Satus of each network port
+  - Error status of each network port
