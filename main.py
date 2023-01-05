@@ -41,7 +41,7 @@ def check_CPU_info():
     if "coretemp" in temps:
         entries = temps["coretemp"]
         for entry in entries:
-            label.append(entry.label+"-temperature")
+            label.append(entry.label + "-temperature")
             temp.append(entry.current)
 
         return label, temp
@@ -77,16 +77,15 @@ def check_network():
                 label.append(nic)
                 status.append(stats[nic].isup)
                 if nic in error_info:
-                    label.append(nic+"-errin")
+                    label.append(nic + "-errin")
                     status.append(error_info[nic].errin)
-                    label.append(nic+"-errout")
+                    label.append(nic + "-errout")
                     status.append(error_info[nic].errout)
-                    label.append(nic+"-dropin")
+                    label.append(nic + "-dropin")
                     status.append(error_info[nic].dropin)
-                    label.append(nic+"-dropout")
+                    label.append(nic + "-dropout")
                     status.append(error_info[nic].dropout)
     return label, status
-
 
 
 def get_data():
@@ -123,11 +122,13 @@ def get_data():
 
     return now, data, column
 
+
 def save_file(df):
     now, data, column = get_data()
     df.loc[now] = data
     df.to_csv("./data/computer_information.csv")
     print(f"{now}, saved to file")
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Enter the time in seconds.")
