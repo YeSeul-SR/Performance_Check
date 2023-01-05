@@ -15,4 +15,3 @@
 
 4. `network.csv`
 - Status of each network port
-- Address information of each network port
