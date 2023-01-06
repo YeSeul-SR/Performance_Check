@@ -78,13 +78,13 @@ def parse_arguments():
 
 
 def main(timer):
-    now, data, column = get_data()
+    check_cpu_gpu_temperature(timer)
+    time.sleep(timer)
 
+    now, data, column = get_data()
+    column.insert(0, "date")
     df = pandas.DataFrame(data=[data], index=[now], columns=column)
     df.to_csv("./data/computer_information.csv")
-
-    check_cpu_gpu_temperature(timer)
-
     print(f"{now}, start saved to file")
 
     time.sleep(timer)
