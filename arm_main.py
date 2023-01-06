@@ -87,7 +87,7 @@ def main(timer):
     time.sleep(timer)
 
     now, data, column = get_data()
-    column.insert(0, "date")
+
     df = pandas.DataFrame(data=[data], index=[now], columns=column)
     df.to_csv("./data/computer_information.csv")
     print(f"{now}, start saved to file")
