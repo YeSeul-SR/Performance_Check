@@ -1,6 +1,6 @@
 # Performance_Check
 
-### How to use
+### How to use - AMD machine
 1. Install the modules
 ```shell
 pip3 install -r requirements.txt
@@ -9,7 +9,12 @@ pip3 install -r requirements.txt
 2. Execute
 - Enter after `--time` how many seconds you want to save computer information every few seconds.
 ```shell
-python3 main.py --time 30
+python3 main_amd.py --time 30
 ```
 
 3. Computer information is saved the `./data` folder
+
+---
+
+
+### How to use - ARM machine
