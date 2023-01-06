@@ -1,10 +1,11 @@
 import os
 import argparse
-import sys
 import time
 import psutil
 import pandas
 from datetime import datetime
+
+
 def check_etc_usage():
     info = []
 
@@ -40,6 +41,7 @@ def check_network():
                     status.append(error_info[nic].dropout)
     return label, status
 
+
 def get_data():
     timestamp = datetime.now()
     now = timestamp.strftime("%m-%d-%Y %H:%M:%S")
@@ -62,14 +64,17 @@ def get_data():
 
     return now, data, column
 
+
 def check_cpu_gpu_temperature(timer):
     return os.popen(f"tegrastats --interval {timer*1000} --logfile ./data/jetpack.txt")
+
 
 def save_file(df):
     now, data, column = get_data()
     df.loc[now] = data
     df.to_csv("./data/computer_information.csv")
     print(f"{now}, saved to file")
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Enter the time in seconds.")
