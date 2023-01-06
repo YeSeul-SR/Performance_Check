@@ -27,7 +27,7 @@ def load_content():
     cpu_temp = []
     gpu_temp = []
     try:
-        file = open("./data/jetpack.txt", "r")
+        file = open("../../data/jetpack.txt", "r")
         lines = file.readlines()
         for line in lines:
             content = list(line.split(" "))
@@ -45,11 +45,11 @@ def load_content():
 def save_file():
     date_list, cpu_list, gpu_list = load_content()
     try:
-        df = pandas.read_csv("./data/computer_information.csv", index_col=None)
+        df = pandas.read_csv("../../data/computer_information.csv", index_col=None)
         if len(cpu_list) == len(df):
             df.insert(0, "CPU Temperature", cpu_list)
             df.insert(1, "GPU Temperature", gpu_list)
-            df.to_csv("./data/total_info.csv")
+            df.to_csv(".././data/total_info.csv")
             print("saved the total_info.csv file")
         else:
             if cpu_list and gpu_list:
@@ -60,11 +60,11 @@ def save_file():
                     index=[first_day],
                     columns=["CPU Temperature", "GPU Temperature"],
                 )
-                new_df.to_csv("./data/temperature.csv")
+                new_df.to_csv("../../data/temperature.csv")
                 for i in range(1, len(date_list)):
                     index = date_list[i]
                     new_df.loc[index] = [cpu_list[i], gpu_list[i]]
-                    new_df.to_csv("./data/temperature.csv")
+                    new_df.to_csv("../../data/temperature.csv")
                 print(
                     "saved the CPU temperature and GPU temperature in temperature.csv file"
                 )

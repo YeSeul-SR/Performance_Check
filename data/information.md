@@ -1,5 +1,6 @@
-### Introduce Folder
+## Introduce Folder
 
+### AMD
 1. `computer_information`
 - CPU information
   - Usage
@@ -17,3 +18,20 @@
 - Network
   - Satus of each network port
   - Error status of each network port
+
+---
+
+### ARM
+1. `computer_information`
+- Usage
+  - CPU Usage 
+  - Memory Usage
+  - Disk Usage
+
+- Network
+  - Satus of each network port
+  - Error status of each network port
+
+2. `jetpack.txt`
+- CPU Temperature
+- GPU Temperature

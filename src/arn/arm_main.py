@@ -66,13 +66,13 @@ def get_data():
 
 
 def check_cpu_gpu_temperature(timer):
-    return os.popen(f"tegrastats --interval {timer*1000} --logfile ./data/jetpack.txt")
+    return os.popen(f"tegrastats --interval {timer*1000} --logfile ../../data/jetpack.txt")
 
 
 def save_file(df):
     now, data, column = get_data()
     df.loc[now] = data
-    df.to_csv("./data/computer_information.csv")
+    df.to_csv("../../data/computer_information.csv")
     print(f"{now}, saved to file")
 
 
@@ -89,7 +89,7 @@ def main(timer):
     now, data, column = get_data()
 
     df = pandas.DataFrame(data=[data], index=[now], columns=column)
-    df.to_csv("./data/computer_information.csv")
+    df.to_csv("../../data/computer_information.csv")
     print(f"{now}, start saved to file")
 
     time.sleep(timer)

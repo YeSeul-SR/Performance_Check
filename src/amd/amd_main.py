@@ -50,10 +50,6 @@ def check_CPU_info():
         sys.exit("can't get core temperatures")
 
 
-def check_CPU_usage(time):
-    return psutil.cpu_percent(interval=time)
-
-
 def check_etc_usage():
     info = []
 
@@ -126,7 +122,7 @@ def get_data():
 def save_file(df):
     now, data, column = get_data()
     df.loc[now] = data
-    df.to_csv("./data/computer_information.csv")
+    df.to_csv("../../data/computer_information.csv")
     print(f"{now}, saved to file")
 
 
@@ -141,7 +137,7 @@ def main(timer):
 
     df = pandas.DataFrame(data=[data], index=[now], columns=column)
 
-    df.to_csv("./data/computer_information.csv")
+    df.to_csv("../../data/computer_information.csv")
     print(f"{now}, start saved to file")
     time.sleep(timer)
     while True:
