@@ -32,6 +32,6 @@
   - Satus of each network port
   - Error status of each network port
 
-2. `jetpack.txt`
+2. `cpu_gpu_temperature.txt`
 - CPU Temperature
 - GPU Temperature
