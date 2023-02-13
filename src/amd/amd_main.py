@@ -119,10 +119,10 @@ def get_data():
     return now, data, column
 
 
-def save_file(df):
+def save_file(df, start_time):
     now, data, column = get_data()
     df.loc[now] = data
-    df.to_csv("../../data/computer_information.csv", mode='a', header=False)
+    df.to_csv(f"../../data/computer_information_{start_time}.csv")
     print(f"{now}, saved to file")
 
 
@@ -137,11 +137,11 @@ def main(timer):
 
     df = pandas.DataFrame(data=[data], index=[now], columns=column)
 
-    df.to_csv("../../data/computer_information.csv")
+    df.to_csv(f"../../data/computer_information_{now}.csv")
     print(f"{now}, start saved to file")
     time.sleep(timer)
     while True:
-        save_file(df)
+        save_file(df, now)
         time.sleep(timer)
 
 
