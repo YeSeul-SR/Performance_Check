@@ -122,7 +122,7 @@ def get_data():
 def save_file(df):
     now, data, column = get_data()
     df.loc[now] = data
-    df.to_csv("../../data/computer_information.csv")
+    df.to_csv("../../data/computer_information.csv", mode='a', header=False)
     print(f"{now}, saved to file")
 
 
