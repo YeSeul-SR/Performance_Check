@@ -30,3 +30,12 @@ pip3 install -r requirements.txt
 cd ./src/arm
 python3 arm_main.py --time 30
 ```
+
+3. Computer information is saved the `./data` folder
+- If you want to merge `computer_information.csv` and `jetpack.txt`, use this shell script
+```shell
+cd ./src/arm
+python3 convert.py 
+```
+- When you run the script, the `total_info.csv` file is created.
+  - However, if the time stamps of  `computer_information.csv` and `jetpack.txt` are different, this script is converted `jetpack.txt` fileto csv.

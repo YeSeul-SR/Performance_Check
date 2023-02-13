@@ -67,7 +67,7 @@ def get_data():
 
 def check_cpu_gpu_temperature(timer):
     return os.popen(
-        f"tegrastats --interval {timer*1000} --logfile ../../data/cpu_gpu_temperature.txt"
+        f"tegrastats --interval {timer*1000} --logfile ../../data/jetpack.txt"
     )
 
 
