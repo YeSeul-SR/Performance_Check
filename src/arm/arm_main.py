@@ -75,9 +75,9 @@ def save_file(df):
     now, data, column = get_data()
     df.loc[now] = data
     if not os.path.exists("../../data/computer_information.csv"):
-        df.to_csv("../../data/computer_information.csv", index=False, mode='w', encoding='utf-8-sig')
+        df.to_csv("../../data/computer_information.csv", mode='w')
     else:
-        df.to_csv("../../data/computer_information.csv", index=False, mode='a', encoding='utf-8-sig', header=False)
+        df.to_csv("../../data/computer_information.csv", mode='a')
     print(f"{now}, saved to file")
 
 
