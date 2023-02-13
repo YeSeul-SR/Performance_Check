@@ -74,7 +74,11 @@ def check_cpu_gpu_temperature(timer):
 def save_file(df):
     now, data, column = get_data()
     df.loc[now] = data
-    df.to_csv("../../data/computer_information.csv")
+    path = "../../data/computer_information.csv"
+    if os.path.isfile(path):
+        print(os.path.basename(path))
+    else:
+        df.to_csv(path)
     print(f"{now}, saved to file")
 
 
